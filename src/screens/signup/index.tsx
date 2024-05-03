@@ -21,12 +21,23 @@ import {
 } from 'react-native-image-picker';
 import PhoneInput, {isValidNumber} from 'react-native-phone-number-input';
 import {Country} from 'react-native-country-picker-modal';
-import SubmitModal from '../../components/submit_modal';
-import {emailRegex, nameRegex, passRegex} from '../../constants/strings';
+import {
+  emailRegex,
+  nameRegex,
+  passRegex,
+  STORAGE,
+} from '../../constants/strings';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import User from '../../interfaces/user_interface';
 import {NAVIGATION, SignupProps} from '../../constants/navigation';
+import CustomPassInput from '../../components/input/custom_pass_input';
+import {
+  ConfirmPassError,
+  EmailValError,
+  PassValidationError,
+} from '../../constants/errors';
+import CustomInput from '../../components/input/custom_input';
 function testInput(re: RegExp, str: string): boolean {
   return re.test(str);
 }
@@ -46,7 +57,6 @@ class Signup extends React.Component<
     passVisible: boolean;
     confirmPassVisible: boolean;
     form: boolean;
-    modal: boolean;
     image: string | undefined;
     cameraSheet: boolean;
   }
@@ -74,20 +84,14 @@ class Signup extends React.Component<
       passVisible: true,
       confirmPassVisible: true,
       form: false,
-      modal: false,
       image: undefined,
       cameraSheet: false,
     };
-    this.setModal = this.setModal.bind(this);
     this.submit = this.submit.bind(this);
     this.openCamera = this.openCamera.bind(this);
     this.openImagePicker = this.openImagePicker.bind(this);
   }
-  setModal() {
-    this.setState(state => {
-      return {modal: !state.modal};
-    });
-  }
+
   openImagePicker = async () => {
     const options: ImageLibraryOptions = {
       mediaType: 'photo',
@@ -131,7 +135,6 @@ class Signup extends React.Component<
       this.state.password === this.state.confirmPassword &&
       this.state.image !== undefined
     ) {
-      // this.setState({modal: true});
       const user: User = {
         firstName: this.state.firstName,
         lastName: this.state.lastName,
@@ -141,8 +144,7 @@ class Signup extends React.Component<
         password: this.state.password,
         image: this.state.image,
       };
-
-      const userData = await AsyncStorage.getItem('userData');
+      const userData = await AsyncStorage.getItem(STORAGE.ALLUSERDATA);
       if (userData) {
         const parsedData: {[key: string]: User} = JSON.parse(userData);
         if (parsedData[user.email]) {
@@ -156,12 +158,12 @@ class Signup extends React.Component<
         const obj = {...parsedData, [user.email]: user};
         console.log(obj);
         const data = JSON.stringify(obj);
-        await AsyncStorage.setItem('userData', data);
+        await AsyncStorage.setItem(STORAGE.ALLUSERDATA, data);
       } else {
         const obj = {[user.email]: user};
         console.log(obj);
         const data = JSON.stringify(obj);
-        await AsyncStorage.setItem('userData', data);
+        await AsyncStorage.setItem(STORAGE.ALLUSERDATA, data);
       }
       this.props.navigation.navigate(NAVIGATION.LOGIN);
     }
@@ -171,16 +173,6 @@ class Signup extends React.Component<
       <SafeAreaView style={style.mainSafeView}>
         <KeyboardAwareScrollView extraHeight={150} style={{flex: 1}}>
           <View style={style.main}>
-            {/* <SubmitModal
-              firstName={this.state.firstName}
-              lastName={this.state.lastName}
-              dob={this.state.dob}
-              email={this.state.email}
-              password={this.state.password}
-              phone={this.state.phone}
-              modal={this.state.modal}
-              setModal={this.setModal}
-            /> */}
             <Modal
               transparent={true}
               visible={this.state.cameraSheet}
@@ -230,9 +222,8 @@ class Signup extends React.Component<
               Create Your Account
             </Text>
             <Text style={style.text}>FIRST NAME</Text>
-            <TextInput
-              style={style.input}
-              placeholder="First Name"
+            <CustomInput
+              type="name"
               value={this.state.firstName}
               onChangeText={e => {
                 if (e.endsWith(' ')) {
@@ -240,8 +231,7 @@ class Signup extends React.Component<
                 }
                 this.setState({firstName: e});
               }}
-              placeholderTextColor="#5d5e67"
-              autoCorrect={false}
+              placeholderText="First Name"
               maxLength={30}
             />
             {!!this.state.firstName &&
@@ -252,19 +242,17 @@ class Signup extends React.Component<
               <Text style={style.error}>First Name cannot be Empty</Text>
             )}
             <Text style={style.text}>LAST NAME</Text>
-            <TextInput
-              style={style.input}
-              placeholder="Last Name"
+            <CustomInput
               value={this.state.lastName}
+              placeholderText="Last Name"
               onChangeText={e => {
                 if (e.endsWith(' ')) {
                   return;
                 }
                 this.setState({lastName: e});
               }}
-              placeholderTextColor="#5d5e67"
+              type="name"
               maxLength={30}
-              autoCorrect={false}
             />
             {!!this.state.lastName &&
               !testInput(nameRegex, this.state.lastName) && (
@@ -274,27 +262,18 @@ class Signup extends React.Component<
               <Text style={style.error}>Last Name cannot be Empty</Text>
             )}
             <Text style={style.text}>EMAIL</Text>
-            <TextInput
-              style={style.input}
-              placeholder="Email"
-              keyboardType="email-address"
+            <CustomInput
               value={this.state.email}
+              placeholderText="Email"
+              type="email"
               onChangeText={e => {
                 if (e.endsWith(' ')) {
                   return;
                 }
                 this.setState({email: e});
               }}
-              placeholderTextColor="#5d5e67"
-              autoCapitalize="none"
-              autoCorrect={false}
             />
-            {!!this.state.email && !testInput(emailRegex, this.state.email) && (
-              <Text style={style.error}>Email is not Valid</Text>
-            )}
-            {this.state.email === '' && this.state.form && (
-              <Text style={style.error}>Email cannot be Empty</Text>
-            )}
+            <EmailValError email={this.state.email} formKey={this.state.form} />
             <Text style={style.text}>DOB</Text>
             <TextInput
               style={[style.dob, style.dobText]}
@@ -367,70 +346,34 @@ class Signup extends React.Component<
               <Text style={style.error}>Phone number cannot be Empty</Text>
             )}
             <Text style={style.text}>PASSWORD</Text>
-            <View style={style.passInputContainer}>
-              <TextInput
-                style={style.passInput}
-                placeholder="Password"
-                secureTextEntry={this.state.passVisible}
-                value={this.state.password}
-                onChangeText={e => {
-                  this.setState({password: e});
-                }}
-                placeholderTextColor="#5d5e67"
-                textContentType="oneTimeCode"
-              />
-              <Pressable
-                onPress={() => {
-                  this.setState(state => {
-                    return {passVisible: !state.passVisible};
-                  });
-                }}>
-                <Text style={style.passShowBtn}>
-                  {this.state.passVisible ? 'Show' : 'Hide'}
-                </Text>
-              </Pressable>
-            </View>
-            {!!this.state.password &&
-              !testInput(passRegex, this.state.password) && (
-                <Text style={style.error}>
-                  Password must contain atleast 1 Uppercase, 1 Lowercase, 1
-                  Numeric and 1 Symbol Character
-                </Text>
-              )}
-            {this.state.password === '' && this.state.form && (
-              <Text style={style.error}>Password cannot be Empty</Text>
-            )}
+            <CustomPassInput
+              value={this.state.password}
+              placeholderText="Password"
+              onChangeText={str => {
+                this.setState({password: str});
+              }}
+              eyeColor="white"
+              inputColor="white"
+            />
+            <PassValidationError
+              pass={this.state.password}
+              formKey={this.state.form}
+            />
             <Text style={style.text}>CONFIRM PASSWORD</Text>
-            <View style={style.passInputContainer}>
-              <TextInput
-                style={style.passInput}
-                placeholder="Confirm Password"
-                secureTextEntry={this.state.confirmPassVisible}
-                value={this.state.confirmPassword}
-                onChangeText={e => {
-                  this.setState({confirmPassword: e});
-                }}
-                placeholderTextColor="#5d5e67"
-              />
-              <Pressable
-                onPress={() => {
-                  this.setState(state => {
-                    return {confirmPassVisible: !state.confirmPassVisible};
-                  });
-                }}>
-                <Text style={style.passShowBtn}>
-                  {this.state.confirmPassVisible ? 'Show' : 'Hide'}
-                </Text>
-              </Pressable>
-            </View>
-            {!!this.state.confirmPassword &&
-              !!this.state.password &&
-              this.state.confirmPassword !== this.state.password && (
-                <Text style={style.error}>Password do not match</Text>
-              )}
-            {this.state.confirmPassword === '' && this.state.form && (
-              <Text style={style.error}>Confirm Password cannot be Empty</Text>
-            )}
+            <CustomPassInput
+              value={this.state.confirmPassword}
+              placeholderText="Confirm Password"
+              onChangeText={str => {
+                this.setState({confirmPassword: str});
+              }}
+              eyeColor="white"
+              inputColor="white"
+            />
+            <ConfirmPassError
+              confirmPass={this.state.confirmPassword}
+              pass={this.state.password}
+              formKey={this.state.form}
+            />
             <TouchableOpacity style={style.button} onPress={this.submit}>
               <Text style={style.buttonText}>Sign Up</Text>
             </TouchableOpacity>

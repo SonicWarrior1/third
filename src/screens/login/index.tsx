@@ -8,12 +8,14 @@ import {
   View,
 } from 'react-native';
 import style from './styles';
-import {useEffect, useRef, useState, useContext} from 'react';
-import {emailRegex} from '../../constants/strings';
+import {useState, useContext} from 'react';
+import {STORAGE} from '../../constants/strings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import User from '../../interfaces/user_interface';
 import {LoginProps, NAVIGATION} from '../../constants/navigation';
-import {LoginContext} from '../../App';
+import {LoginContext} from '../../navigators/AuthNavigator';
+import CustomPassInput from '../../components/input/custom_pass_input';
+import {EmailValError, PassEmptyError} from '../../constants/errors';
 
 const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
   route,
@@ -22,30 +24,22 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
   const setIsLogIn = useContext(LoginContext);
   const [email, setEmail] = useState('');
   const [form, setForm] = useState(false);
-  const [showPass, setShowPass] = useState(true);
   const [password, setPassword] = useState('');
   function testInput(re: RegExp, str: string): boolean {
     return re.test(str);
   }
-  // let ref = useRef<TextInput>(null);
-  // useEffect(() => {
-  //   ref.current?.focus();
-  //   return () => {
-  //     console.log('Hi');
-  //   };
-  // }, []);
+
   async function onLogin() {
     setForm(true);
-    const userData = await AsyncStorage.getItem('userData');
+    const userData = await AsyncStorage.getItem(STORAGE.ALLUSERDATA);
     if (email && password) {
       if (userData) {
         const parsedData: {[key: string]: User} = JSON.parse(userData);
         if (parsedData[email]) {
           if (parsedData[email].password == password) {
             const data = JSON.stringify(parsedData[email]);
-            await AsyncStorage.setItem('currentUser', data);
+            await AsyncStorage.setItem(STORAGE.CURRENTUSER, data);
             setIsLogIn(true);
-            // navigation.replace(NAVIGATION.APP);
           } else {
             Alert.alert(
               'Wrong Password',
@@ -71,11 +65,9 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
   }
   return (
     <SafeAreaView style={style.mainSafeView}>
-      {/* <KeyboardAwareScrollView style={{flex:1,borderWidth:1}}> */}
       <View style={style.main}>
         <Text style={style.text}>EMAIL</Text>
         <TextInput
-          // ref={ref}
           style={style.input}
           placeholder="Email"
           keyboardType="email-address"
@@ -90,34 +82,18 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
           autoCorrect={false}
           autoFocus
         />
-        {!!email && !testInput(emailRegex, email) && (
-          <Text style={style.error}>Email is not Valid</Text>
-        )}
-        {email === '' && form && (
-          <Text style={style.error}>Email cannot be Empty</Text>
-        )}
+        <EmailValError email={email} formKey={form} />
         <Text style={style.text}>PASSWORD</Text>
-        <View style={style.passInputContainer}>
-          <TextInput
-            style={style.passInput}
-            placeholder="Password"
-            secureTextEntry={showPass}
-            value={password}
-            onChangeText={e => {
-              setPassword(e);
-            }}
-            placeholderTextColor="#5d5e67"
-          />
-          <Pressable
-            onPress={() => {
-              setShowPass(pass => !pass);
-            }}>
-            <Text style={style.passShowBtn}>{showPass ? 'Show' : 'Hide'}</Text>
-          </Pressable>
-        </View>
-        {password === '' && form && (
-          <Text style={style.error}>Password cannot be Empty</Text>
-        )}
+        <CustomPassInput
+          placeholderText="Password"
+          value={password}
+          onChangeText={str => {
+            setPassword(str);
+          }}
+          eyeColor="white"
+          inputColor="white"
+        />
+        <PassEmptyError pass={password} formKey={form} />
         <TouchableOpacity style={style.button} onPress={onLogin}>
           <Text style={style.buttonText}>Log In</Text>
         </TouchableOpacity>
@@ -128,7 +104,6 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
           <Text style={style.signuptext}>Don't have an account ? Signup</Text>
         </Pressable>
       </View>
-      {/* </KeyboardAwareScrollView> */}
     </SafeAreaView>
   );
 };

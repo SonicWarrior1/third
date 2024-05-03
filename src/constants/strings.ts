@@ -3,4 +3,4 @@ export const nameRegex = /^[a-zA-Z]*$/;
 export const passRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-
+export const STORAGE = { ALLUSERDATA: 'userData',CURRENTUSER:'currentUser' }
