@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useContext} from 'react';
-import {Button, Text} from 'react-native';
+import { View} from 'react-native';
 
 import {STORAGE} from '../../constants/strings';
 import {LoginContext} from '../../navigators/AuthNavigator';
 import DrawerView from '../../components/Drawer/drawerView';
+import CustomButton from '../../components/input/custom_button';
 
 const SettingScreen: ({route, navigation}) => React.JSX.Element = ({
   route,
@@ -13,19 +14,28 @@ const SettingScreen: ({route, navigation}) => React.JSX.Element = ({
   const setIsLogIn = useContext(LoginContext);
   return (
     <DrawerView navigation={navigation}>
-        <>
-      <Button
-        title="Change Password"
-        onPress={async () => {
+      <View style={{flex: 1, justifyContent: 'center',paddingHorizontal:20}}>
+        <CustomButton
+          title="Change Password"
+          onPress={async () => {
             navigation.push('changePass');
-        }}></Button>
-      <Button
-        title="Signout"
-        onPress={async () => {
+          }}
+          btnColor='orange'
+          />
+        {/* <CustomButton
+          title="Billing Information"
+          onPress={async () => {
+            navigation.push('Billing');
+          }}/> */}
+        <CustomButton
+          title="Signout"
+          onPress={async () => {
             await AsyncStorage.removeItem(STORAGE.CURRENTUSER);
             setIsLogIn(false);
-        }}></Button>
-        </>
+          }}
+          btnColor='#FC4100'
+          />
+      </View>
     </DrawerView>
   );
 };

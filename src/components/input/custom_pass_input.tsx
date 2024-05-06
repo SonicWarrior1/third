@@ -32,12 +32,12 @@ function CustomPassInput({
         onPress={() => {
           setShowPass(pass => !pass);
         }}>
-        {showPass
+        {/* {showPass
           ? ICONS.EyeClose({height: 20, width: 20})
-          : ICONS.EyeOpen({height: 20, width: 20})}
-        {/* <Text style={[style.passShowBtn, {color: eyeColor}]}>
+          : ICONS.EyeOpen({height: 20, width: 20})} */}
+        <Text style={[style.passShowBtn, {color: eyeColor}]}>
           {showPass ? 'Show' : 'Hide'}
-        </Text> */}
+        </Text>
       </Pressable>
     </View>
   );

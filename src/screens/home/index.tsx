@@ -1,11 +1,10 @@
-import {Button, Image, Pressable, Text, View} from 'react-native';
+import {Image, Text, View} from 'react-native';
 import style from './styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useEffect, useState, useContext} from 'react';
+import {useEffect, useState} from 'react';
 import User from '../../interfaces/user_interface';
 import {HomeScreenProps} from '../../constants/navigation';
 import {STORAGE} from '../../constants/strings';
-import {ICONS} from '../../constants/icons';
 import DrawerView from '../../components/Drawer/drawerView';
 
 const Home: ({route, navigation}: HomeScreenProps) => React.JSX.Element = ({

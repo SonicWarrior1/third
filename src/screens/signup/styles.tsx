@@ -9,34 +9,7 @@ const style = StyleSheet.create({
     marginTop: 10,
     paddingBottom: 10,
   },
-  input: {
-    borderWidth: 2,
-    borderRadius: 20,
-    height: 40,
-    marginBottom: 10,
-    marginTop: 5,
-    paddingHorizontal: 20,
-    borderColor: '#4f4f53',
-    color: 'white',
-  },
-  passShowBtn: {color: 'white', textDecorationLine: 'underline'},
-  passInputContainer: {
-    borderWidth: 2,
-    borderRadius: 20,
-    height: 40,
-    marginBottom: 10,
-    marginTop: 5,
-    paddingLeft: 20,
-    borderColor: '#4f4f53',
-    color: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingRight: 12,
-  },
-  passInput: {
-    color: 'white',
-    flex: 1,
-  },
+
   text: {fontSize: 16, fontWeight: 'bold', color: 'white'},
   button: {
     backgroundColor: '#3bc68b',
@@ -46,7 +19,6 @@ const style = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  buttonText: {color: 'white'},
   dob: {
     borderWidth: 2,
     borderRadius: 20,

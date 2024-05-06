@@ -28,7 +28,21 @@ const style = StyleSheet.create({
     paddingHorizontal: 20,
     borderColor: '#4f4f53',
     color: 'white',
+  },  button: {
+    backgroundColor: '#3bc68b',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
   },
+  buttonText: {color: 'white'},error: {
+    color: 'rgb(255,51,51)',
+    fontSize: 12,
+    paddingLeft: 12,
+    marginTop: -5,
+    marginBottom: 10,
+  },main: {flex: 1, justifyContent: 'center', alignItems: 'center'},
 });
 
 export default style;

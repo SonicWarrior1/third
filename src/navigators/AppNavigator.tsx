@@ -12,7 +12,6 @@ import {
   DrawerContentScrollView,
   DrawerItem,
   DrawerItemList,
-  DrawerScreenProps,
 } from '@react-navigation/drawer';
 import SettingScreen from '../screens/settings';
 import {ICONS} from '../constants/icons';
@@ -35,9 +34,10 @@ const DrawerNavigator = () => {
     <Drawer.Navigator
       drawerContent={props => CustomDrawerContent(props)}
       screenOptions={{
-        headerShown:false,
+        headerShown: false,
         drawerActiveTintColor: 'orange',
-        drawerPosition: 'right',drawerType:"front"
+        drawerPosition: 'right',
+        drawerType: 'front',
       }}>
       <Drawer.Screen name={NAVIGATION.TABS.DRAWER.HOME} component={Home} />
       <Drawer.Screen
@@ -72,6 +72,7 @@ const AppNavigator = () => {
               height: 20,
               color: 'white',
             }),
+          // headerShown: true,
         }}
       />
     </Tab.Navigator>

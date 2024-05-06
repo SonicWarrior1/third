@@ -12,6 +12,7 @@ import {
   PassEmptyError,
   PassValidationError,
 } from '../../constants/errors';
+import CustomButton from '../../components/input/custom_button';
 
 const ChangePass: ({
   route,
@@ -96,9 +97,7 @@ const ChangePass: ({
         confirmPass={confirmNewPass}
         formKey={form}
       />
-      <TouchableOpacity style={style.button} onPress={changePass}>
-        <Text style={style.buttonText}>Submit</Text>
-      </TouchableOpacity>
+      <CustomButton onPress={changePass} title='Submit'/>
     </View>
   );
 };

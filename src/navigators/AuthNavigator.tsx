@@ -7,6 +7,8 @@ import {createContext, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {STORAGE} from '../constants/strings';
 import ChangePass from '../screens/changePass';
+import Billing from '../screens/billing';
+import FormikSignup from '../screens/formikSignup';
 const LoginContext = createContext<
   React.Dispatch<React.SetStateAction<boolean>>
 >(() => {});
@@ -33,7 +35,7 @@ const AuthNavigator = () => {
             <Stack.Screen
               name={NAVIGATION.APP}
               component={AppNavigator}
-              options={{headerShown: false}}
+              options={{headerShown: false,}}
             />
           ) : (
             <Stack.Group
@@ -46,6 +48,7 @@ const AuthNavigator = () => {
             </Stack.Group>
           )}
           <Stack.Screen name="changePass" component={ChangePass} />
+          <Stack.Screen name="Billing" component={Billing} />
         </>
       </Stack.Navigator>
     </LoginContext.Provider>

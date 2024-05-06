@@ -3,8 +3,6 @@ import {
   Pressable,
   SafeAreaView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import style from './styles';
@@ -16,6 +14,8 @@ import {LoginProps, NAVIGATION} from '../../constants/navigation';
 import {LoginContext} from '../../navigators/AuthNavigator';
 import CustomPassInput from '../../components/input/custom_pass_input';
 import {EmailValError, PassEmptyError} from '../../constants/errors';
+import CustomButton from '../../components/input/custom_button';
+import CustomInput from '../../components/input/custom_input';
 
 const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
   route,
@@ -67,20 +67,15 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
     <SafeAreaView style={style.mainSafeView}>
       <View style={style.main}>
         <Text style={style.text}>EMAIL</Text>
-        <TextInput
-          style={style.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          value={email}
+        <CustomInput
           onChangeText={e => {
             if (!e.endsWith(' ')) {
               setEmail(e);
             }
           }}
-          placeholderTextColor="#5d5e67"
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoFocus
+          placeholderText="Email"
+          type="email"
+          value={email}
         />
         <EmailValError email={email} formKey={form} />
         <Text style={style.text}>PASSWORD</Text>
@@ -94,9 +89,7 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
           inputColor="white"
         />
         <PassEmptyError pass={password} formKey={form} />
-        <TouchableOpacity style={style.button} onPress={onLogin}>
-          <Text style={style.buttonText}>Log In</Text>
-        </TouchableOpacity>
+        <CustomButton onPress={onLogin} title="Log In" />
         <Pressable
           onPress={() => {
             navigation.navigate(NAVIGATION.SIGNUP);

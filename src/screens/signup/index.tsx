@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   Pressable,
-  TouchableOpacity,
   Modal,
   Image,
   SafeAreaView,
@@ -38,6 +37,7 @@ import {
   PassValidationError,
 } from '../../constants/errors';
 import CustomInput from '../../components/input/custom_input';
+import CustomButton from '../../components/input/custom_button';
 function testInput(re: RegExp, str: string): boolean {
   return re.test(str);
 }
@@ -256,7 +256,7 @@ class Signup extends React.Component<
             />
             {!!this.state.lastName &&
               !testInput(nameRegex, this.state.lastName) && (
-                <Text style={style.error}>First Name is not Valid</Text>
+                <Text style={style.error}>Last Name is not Valid</Text>
               )}
             {this.state.lastName === '' && this.state.form && (
               <Text style={style.error}>Last Name cannot be Empty</Text>
@@ -374,9 +374,7 @@ class Signup extends React.Component<
               pass={this.state.password}
               formKey={this.state.form}
             />
-            <TouchableOpacity style={style.button} onPress={this.submit}>
-              <Text style={style.buttonText}>Sign Up</Text>
-            </TouchableOpacity>
+            <CustomButton onPress={this.submit} title="Sign Up" />
           </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>
