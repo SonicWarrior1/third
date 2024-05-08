@@ -26,9 +26,9 @@ const Home: ({route, navigation}: HomeScreenProps) => React.JSX.Element = ({
   const [user, setUser] = useState<User>();
   useEffect(() => {
     getUser();
-  });
+  },[]);
   return (
-    <DrawerView navigation={navigation}>
+    // <DrawerView navigation={navigation}>
       <View style={style.main}>
         <Image source={{uri: user?.image}} style={style.image} />
         <View style={{alignItems: 'flex-start'}}>
@@ -42,7 +42,7 @@ const Home: ({route, navigation}: HomeScreenProps) => React.JSX.Element = ({
           <Text style={style.text}>Password: {user?.password}</Text>
         </View>
       </View>
-    </DrawerView>
+    // </DrawerView>
   );
 };
 

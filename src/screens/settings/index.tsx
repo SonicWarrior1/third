@@ -13,7 +13,7 @@ const SettingScreen: ({route, navigation}) => React.JSX.Element = ({
 }) => {
   const setIsLogIn = useContext(LoginContext);
   return (
-    <DrawerView navigation={navigation}>
+    // <DrawerView navigation={navigation}>
       <View style={{flex: 1, justifyContent: 'center',paddingHorizontal:20}}>
         <CustomButton
           title="Change Password"
@@ -36,7 +36,7 @@ const SettingScreen: ({route, navigation}) => React.JSX.Element = ({
           btnColor='#FC4100'
           />
       </View>
-    </DrawerView>
+    // </DrawerView>
   );
 };
 export default SettingScreen;

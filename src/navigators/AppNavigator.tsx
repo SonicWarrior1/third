@@ -15,6 +15,7 @@ import {
 } from '@react-navigation/drawer';
 import SettingScreen from '../screens/settings';
 import {ICONS} from '../constants/icons';
+import Todo from '../screens/Todo';
 function CustomDrawerContent(props: Readonly<DrawerContentComponentProps>) {
   return (
     <DrawerContentScrollView {...props}>
@@ -34,9 +35,9 @@ const DrawerNavigator = () => {
     <Drawer.Navigator
       drawerContent={props => CustomDrawerContent(props)}
       screenOptions={{
-        headerShown: false,
+       
         drawerActiveTintColor: 'orange',
-        drawerPosition: 'right',
+        // drawerPosition: 'right',
         drawerType: 'front',
       }}>
       <Drawer.Screen name={NAVIGATION.TABS.DRAWER.HOME} component={Home} />
@@ -62,6 +63,7 @@ const AppNavigator = () => {
           tabBarIcon: () => ICONS.HOME({width: 18, height: 18}),
         }}
       />
+      <Tab.Screen name="Todo" component={Todo}/>
       <Tab.Screen
         name={NAVIGATION.TABS.USERS}
         component={AllUsers}

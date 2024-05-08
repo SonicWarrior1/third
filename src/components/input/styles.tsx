@@ -4,7 +4,7 @@ const style = StyleSheet.create({
   passInputContainer: {
     borderWidth: 2,
     borderRadius: 20,
-    height: 40,
+    height: 60,
     marginBottom: 10,
     marginTop: 5,
     paddingLeft: 20,
@@ -22,7 +22,7 @@ const style = StyleSheet.create({
   input: {
     borderWidth: 2,
     borderRadius: 20,
-    height: 40,
+    height: 60,
     marginBottom: 10,
     marginTop: 5,
     paddingHorizontal: 20,
@@ -31,7 +31,7 @@ const style = StyleSheet.create({
   },  button: {
     backgroundColor: '#3bc68b',
     borderRadius: 20,
-    height: 40,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,

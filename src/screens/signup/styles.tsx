@@ -22,7 +22,7 @@ const style = StyleSheet.create({
   dob: {
     borderWidth: 2,
     borderRadius: 20,
-    height: 40,
+    height: 60,
     marginBottom: 10,
     marginTop: 5,
     borderColor: '#4f4f53',
@@ -87,10 +87,11 @@ export const phoneInputStyle = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#4f4f53',
     backgroundColor: 'rgb(51,50,56)',
-    height: 40,
+    height: 60,
     marginTop: 5,
     marginBottom: 10,
-    width: 335,
+    width: "100%",
+    
   },
   textContainerStyle: {
     backgroundColor: 'rgb(51,50,56)',

@@ -8,17 +8,24 @@ function CustomButton({
   btnColor = '#3bc68b',
   txtColor = 'white',
   disabled = false,
+  flex ,
+  marginTop=20,
 }: Readonly<{
   onPress: () => void;
   title: string;
   btnColor?: string;
   txtColor?: string;
   disabled?: boolean;
+  flex?: number;
+  marginTop?: number;
 }>) {
   return (
     <TouchableOpacity
       disabled={disabled}
-      style={[style.button, {backgroundColor: btnColor}]}
+      style={[
+        style.button,
+        {backgroundColor: btnColor, flex: flex, marginTop: marginTop},
+      ]}
       onPress={onPress}>
       <Text style={[style.buttonText, {color: txtColor}]}>{title}</Text>
     </TouchableOpacity>

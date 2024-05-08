@@ -13,6 +13,7 @@ function CustomInput({
   maxLength = 100,
   inputColor = 'white',
   onBlur,
+  flex ,
 }: Readonly<{
   value: string;
   onChangeText: (str: string) => void;
@@ -21,10 +22,11 @@ function CustomInput({
   maxLength?: number;
   inputColor?: string;
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
+  flex?: number;
 }>) {
   return (
     <TextInput
-      style={[style.input, {color: inputColor}]}
+      style={[style.input, {color: inputColor, flex: flex}]}
       placeholder={placeholderText}
       keyboardType={type === 'name' ? 'default' : 'email-address'}
       value={value}
