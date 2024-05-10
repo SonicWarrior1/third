@@ -1,12 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {FlatList, Text, View} from 'react-native';
 import User from '../../interfaces/user_interface';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserTabScreenProps} from '../../constants/navigation';
 import style from './styles';
-import {STORAGE} from '../../constants/strings';
 import CustomInput from '../../components/input/custom_input';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../Redux/Store';
 function itemSeperator() {
   return <View style={{height: 10}}></View>;
 }
@@ -14,23 +14,10 @@ const AllUsers: ({
   route,
   navigation,
 }: UserTabScreenProps) => React.JSX.Element = ({route, navigation}) => {
-  
-  const [allUsers, setAllUsers] = useState<{[key: string]: User}>();
   const [search, setSearch] = useState('');
-  async function getAllUsers() {
-    const userData = await AsyncStorage.getItem(STORAGE.ALLUSERDATA);
-    if (userData) {
-      const parsed = JSON.parse(userData);
-      setAllUsers(parsed);
-      navigation.setOptions({
-        tabBarBadge: Object.values(parsed).length,
-      });
-    }
-  }
-  useEffect(() => {
-    getAllUsers();
-  }, []);
-  console.log(allUsers);
+  const allUsers = useSelector<RootState, {[key: string]: User}>(
+    state => state.UserReducer?.allUser!,
+  );
   return (
     <SafeAreaView style={style.safeView}>
       <View style={style.insideView}>

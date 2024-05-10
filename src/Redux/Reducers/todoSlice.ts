@@ -1,19 +1,17 @@
-import { createStore } from "redux";
-export type todoType = { id: number, text: string, completed: boolean, color?: string }
-export type filterType = { status: "All" | "Active" | "Completed", colors: string[] };
 function nextTodoId(todos: todoType[]) {
     const maxId = todos.reduce((maxId, todo) => Math.max(todo.id, maxId), -1)
     return maxId + 1
 }
+export type todoType = { id: number, text: string, completed: boolean, color?: string }
+export type filterType = { status: "All" | "Active" | "Completed", colors: string[] };
 
 const initialState: { todos: todoType[], filters: filterType } = {
     todos: [], filters: { status: 'All', colors: [] }
 }
 
-function TodoReducer(state = initialState, action: { type: string, payload: string | number | { id: number, color: string } | string[] }) {
+export default function TodoReducer(state = initialState, action: { type: string, payload?: string | number | { id: number, color: string } | string[] }) {
     switch (action.type) {
         case 'todos/TodoAdded': {
-            console.log(state)
             return {
                 ...state,
                 todos: [...state.todos, { id: nextTodoId(state.todos), text: action.payload, completed: false }]
@@ -54,15 +52,6 @@ function TodoReducer(state = initialState, action: { type: string, payload: stri
             return {
                 ...state,
                 todos: state.todos.filter(todo => !todo.completed)
-            }
-        }
-        case 'todos/addColorFilter': {
-            return {
-                ...state,
-                filters: {
-                    ...state.filters,
-                    colors: [...state.filters.colors, ...(action.payload as string[])]
-                }
             }
         }
         case 'todos/TodoAddColor': {
@@ -109,8 +98,3 @@ function TodoReducer(state = initialState, action: { type: string, payload: stri
             return state;
     }
 }
-const store = createStore(TodoReducer)
-
-export type RootState = ReturnType<typeof store.getState>
-
-export { store };

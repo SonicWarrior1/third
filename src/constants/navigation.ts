@@ -10,12 +10,13 @@ export type RootStackParamList = {
     App: undefined;
     UserDetails: undefined
     changePass: undefined
-    Billing:undefined
+    Billing: undefined
 };
 export type BottomTabParamList = {
     Drawer: undefined;
     Users: undefined;
-    Todo:undefined;
+    Todo: undefined;
+    Products: undefined
 };
 export type DrawerParamList = {
     Home: undefined

@@ -1,19 +1,43 @@
-import React, {useState} from 'react';
-import {FlatList, Pressable, SafeAreaView, Text, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {
+  Button,
+  FlatList,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {filterType, RootState, todoType} from '../../Store';
+import {AppDispatch, RootState} from '../../Redux/Store';
 import CustomInput from '../../components/input/custom_input';
 import CustomButton from '../../components/input/custom_button';
 import CheckBox from '@react-native-community/checkbox';
 import {Dropdown} from 'react-native-element-dropdown';
+import {Swipeable} from 'react-native-gesture-handler';
+import {todoType, filterType} from '../../Redux/Reducers/todoSlice';
+import ActionSheet, {ActionSheetRef} from 'react-native-actions-sheet';
+import {
+  TodoAddColorFilter,
+  TodoAllCompleted,
+  TodoClearCompleted,
+  TodoDelete,
+  TodoRemoveColorFilter,
+  todosAdded,
+  TodosChangeTodoStatus,
+  todoToggled,
+} from '../../Redux/Actions/todoActions';
 
 function Todo() {
-  const dataList = useSelector<RootState, todoType[]>(state => state.todos);
-  const filters = useSelector<RootState, filterType>(state => state.filters);
+  const dataList = useSelector<RootState, todoType[]>(
+    state => state.TodoReducer?.todos!,
+  );
+  const filters = useSelector<RootState, filterType>(
+    state => state.TodoReducer?.filters!,
+  );
   console.log(dataList);
   console.log(filters);
   const [text, setText] = useState('');
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const colors = ['red', 'blue', 'green', 'orange', 'purple'];
   function colorFilter(item: {
     id: number;
@@ -40,8 +64,94 @@ function Todo() {
       return true;
     }
   }
+  const actionSheetRef = useRef<ActionSheetRef>(null);
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ActionSheet ref={actionSheetRef}>
+        <View style={{paddingHorizontal: 10, paddingVertical: 20}}>
+          <Text>
+            Remaining Todos{' '}
+            {dataList.reduce((acc, curr) => {
+              if (curr.completed === false) {
+                acc++;
+              }
+              return acc;
+            }, 0)}
+          </Text>
+          <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'column', flex: 1}}>
+              <CustomButton
+                title="Mark All Completed"
+                onPress={() => {
+                  dispatch(TodoAllCompleted());
+                }}
+              />
+              <CustomButton
+                title="Clear Completed"
+                onPress={() => {
+                  dispatch(TodoClearCompleted());
+                }}
+              />
+            </View>
+            <View style={{flexDirection: 'column', flex: 1}}>
+              <Dropdown
+                style={{
+                  width: 120,
+                  borderWidth: 1,
+                  paddingHorizontal: 5,
+                  marginLeft: 10,
+                  marginBottom: 5,
+                }}
+                data={[
+                  {label: 'All', value: 'All'},
+                  {label: 'Active', value: 'Active'},
+                  {label: 'Completed', value: 'Completed'},
+                ]}
+                labelField={'label'}
+                value={filters.status}
+                onChange={val => {
+                  console.log(val.value);
+                  dispatch(
+                    TodosChangeTodoStatus(
+                      val.value as 'All' | 'Active' | 'Completed',
+                    ),
+                  );
+                }}
+                valueField={'value'}
+              />
+              {colors.map(color => (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 5,
+                  }}
+                  key={color}>
+                  <CheckBox
+                    style={{marginHorizontal: 20}}
+                    value={filters.colors.includes(color)}
+                    onValueChange={val => {
+                      if (val) {
+                        dispatch(TodoAddColorFilter(color));
+                      } else {
+                        dispatch(TodoRemoveColorFilter(color));
+                      }
+                    }}
+                  />
+                  <View
+                    style={{
+                      backgroundColor: color,
+                      width: 25,
+                      height: 15,
+                      marginRight: 20,
+                    }}></View>
+                  <Text>{color}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+      </ActionSheet>
       <View
         style={{
           flexDirection: 'row',
@@ -64,154 +174,95 @@ function Todo() {
           flex={1}
           onPress={() => {
             if (text) {
-              dispatch({type: 'todos/TodoAdded', payload: text});
+              dispatch(todosAdded(text));
               setText('');
             }
           }}
           marginTop={0}
         />
       </View>
+      <Button
+        title="Filters"
+        onPress={() => {
+          actionSheetRef.current?.show();
+        }}
+      />
       <FlatList
         data={dataList.filter(item => statusFilter(item) && colorFilter(item))}
         style={{flex: 1, paddingTop: 10}}
         renderItem={({item}) => {
           return (
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingHorizontal: 15,
+            <Swipeable
+              renderRightActions={() => {
+                return (
+                  <View>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: 'red',
+                        height: '100%',
+                        justifyContent: 'center',
+                        paddingHorizontal: 15,
+                        borderRadius: 30,
+                      }}
+                      onPress={() => {
+                        dispatch(TodoDelete(item.id));
+                      }}>
+                      <Text style={{color: 'white'}}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                );
               }}>
-              <CheckBox
-                value={item.completed}
-                onChange={() => {
-                  dispatch({type: 'todos/TodoToggled', payload: item.id});
-                }}
-              />
-              <Text style={{fontSize: 18,width:120}}>{item.text}</Text>
-              <Dropdown
-                style={{width: 120, borderWidth: 1, paddingHorizontal: 5}}
-                data={[
-                  {label: 'Red', value: 'red'},
-                  {label: 'Blue', value: 'blue'},
-                  {label: 'Green', value: 'green'},
-                  {label: 'Orange', value: 'orange'},
-                  {label: 'Purple', value: 'purple'},
-                ]}
-                labelField={'label'}
-                onChange={val => {
-                  dispatch({
-                    type: 'todos/TodoAddColor',
-                    payload: {id: item.id, color: val.value},
-                  });
-                }}
-                value={item.color}
-                valueField={'value'}
-              />
-              <Pressable
-                onPress={() => {
-                  dispatch({type: 'todos/TodoDelete', payload: item.id});
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingHorizontal: 15,
+                  backgroundColor: 'white',
+                  borderRadius: 30,
+                  paddingVertical: 8,
+                  marginHorizontal: 10,
                 }}>
-                <Text>X</Text>
-              </Pressable>
-            </View>
+                <CheckBox
+                  value={item.completed}
+                  onChange={() => {
+                    dispatch(todoToggled(item.id));
+                  }}
+                />
+                <Text style={{fontSize: 18, width: 120}}>{item.text}</Text>
+                <Dropdown
+                  style={{width: 120, borderWidth: 1, paddingHorizontal: 5}}
+                  data={[
+                    {label: 'Red', value: 'red'},
+                    {label: 'Blue', value: 'blue'},
+                    {label: 'Green', value: 'green'},
+                    {label: 'Orange', value: 'orange'},
+                    {label: 'Purple', value: 'purple'},
+                  ]}
+                  labelField={'label'}
+                  onChange={val => {
+                    dispatch({
+                      type: 'todos/TodoAddColor',
+                      payload: {id: item.id, color: val.value},
+                    });
+                  }}
+                  value={item.color}
+                  valueField={'value'}
+                />
+              </View>
+            </Swipeable>
           );
         }}
         ItemSeparatorComponent={() => {
           return (
             <View
               style={{
-                borderWidth: 1,
-                borderColor: 'grey',
-                marginVertical: 10,
+                marginVertical: 5,
               }}></View>
           );
         }}
       />
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: 'grey',
-          marginVertical: 10,
-        }}></View>
-      <Text>
-        Remaining Todos{' '}
-        {dataList.reduce((acc, curr) => {
-          if (curr.completed === false) {
-            acc++;
-          }
-          return acc;
-        }, 0)}
-      </Text>
-      <View style={{flexDirection: 'row'}}>
-        <View style={{flexDirection: 'column', flex: 1}}>
-          <CustomButton
-            title="Mark All Completed"
-            onPress={() => {
-              dispatch({type: 'todos/TodoAllCompleted'});
-            }}
-          />
-          <CustomButton
-            title="Clear Completed"
-            onPress={() => {
-              dispatch({type: 'todos/TodoClearCompleted'});
-            }}
-          />
-        </View>
-        <View style={{flexDirection: 'column', flex: 1}}>
-          <Dropdown
-            style={{
-              width: 120,
-              borderWidth: 1,
-              paddingHorizontal: 5,
-              marginLeft: 10,
-              marginBottom: 5,
-            }}
-            data={[
-              {label: 'All', value: 'All'},
-              {label: 'Active', value: 'Active'},
-              {label: 'Completed', value: 'Completed'},
-            ]}
-            labelField={'label'}
-            value={filters.status}
-            onChange={val => {
-              console.log(val.value);
-              dispatch({type: 'todos/ChangeTodoStatus', payload: val.value});
-            }}
-            valueField={'value'}
-          />
-          {colors.map(color => (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: 5,
-              }}
-              key={color}>
-              <CheckBox
-                style={{marginHorizontal: 20}}
-                onValueChange={val => {
-                  if (val) {
-                    dispatch({type: 'todos/AddColorFilter', payload: color});
-                  } else {
-                    dispatch({type: 'todos/RemoveColorFilter', payload: color});
-                  }
-                }}
-              />
-              <View
-                style={{
-                  backgroundColor: color,
-                  width: 25,
-                  height: 15,
-                  marginRight: 20,
-                }}></View>
-              <Text>{color}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
     </SafeAreaView>
   );
 }

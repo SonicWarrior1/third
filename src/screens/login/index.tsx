@@ -1,27 +1,22 @@
-import {
-  Alert,
-  Pressable,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import {Alert, Pressable, SafeAreaView, Text, View} from 'react-native';
 import style from './styles';
-import {useState, useContext} from 'react';
+import {useState} from 'react';
 import {STORAGE} from '../../constants/strings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import User from '../../interfaces/user_interface';
 import {LoginProps, NAVIGATION} from '../../constants/navigation';
-import {LoginContext} from '../../navigators/AuthNavigator';
 import CustomPassInput from '../../components/input/custom_pass_input';
 import {EmailValError, PassEmptyError} from '../../constants/errors';
 import CustomButton from '../../components/input/custom_button';
 import CustomInput from '../../components/input/custom_input';
+import {useDispatch} from 'react-redux';
+import { AppDispatch } from '../../Redux/Store';
 
 const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
   route,
   navigation,
 }) => {
-  const setIsLogIn = useContext(LoginContext);
+  const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState('');
   const [form, setForm] = useState(false);
   const [password, setPassword] = useState('');
@@ -39,7 +34,10 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
           if (parsedData[email].password == password) {
             const data = JSON.stringify(parsedData[email]);
             await AsyncStorage.setItem(STORAGE.CURRENTUSER, data);
-            setIsLogIn(true);
+            dispatch({
+              type: 'users/setCurrentUser',
+              payload: parsedData[email],
+            });
           } else {
             Alert.alert(
               'Wrong Password',
