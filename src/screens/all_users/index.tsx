@@ -2,11 +2,11 @@ import {useState} from 'react';
 import {FlatList, Text, View} from 'react-native';
 import User from '../../interfaces/user_interface';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {UserTabScreenProps} from '../../constants/navigation';
+import {BottomTabParamList, RootStackParamList, UserTabScreenProps} from '../../constants/navigation';
 import style from './styles';
 import CustomInput from '../../components/input/custom_input';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../Redux/Store';
+import {useAppSelector} from '../../Redux/Store';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 function itemSeperator() {
   return <View style={{height: 10}}></View>;
 }
@@ -15,11 +15,9 @@ const AllUsers: ({
   navigation,
 }: UserTabScreenProps) => React.JSX.Element = ({route, navigation}) => {
   const [search, setSearch] = useState('');
-  const allUsers = useSelector<RootState, {[key: string]: User}>(
-    state => state.UserReducer?.allUser!,
-  );
+  const allUsers = useAppSelector(state => state.user.allUser);
   return (
-    <SafeAreaView style={style.safeView}>
+    <SafeAreaView style={[style.safeView, {marginBottom: 29}]}>
       <View style={style.insideView}>
         <Text style={style.headerText}>All Users</Text>
         <CustomInput
@@ -47,7 +45,6 @@ const AllUsers: ({
             }
             ItemSeparatorComponent={() => itemSeperator()}
             renderItem={({item}) => {
-              const date = new Date(item.dob);
               return (
                 <View style={style.itemBackground}>
                   <View style={style.outerRow}>
@@ -59,7 +56,7 @@ const AllUsers: ({
                         <Text>
                           {item.firstName} {item.lastName}
                         </Text>
-                        <Text>{date.toLocaleDateString()}</Text>
+                        <Text>{new Date(item.dob).toLocaleDateString()}</Text>
                       </View>
                       <View style={style.innerRow}>
                         <Text>{item.email}</Text>

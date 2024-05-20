@@ -9,14 +9,14 @@ import CustomPassInput from '../../components/input/custom_pass_input';
 import {EmailValError, PassEmptyError} from '../../constants/errors';
 import CustomButton from '../../components/input/custom_button';
 import CustomInput from '../../components/input/custom_input';
-import {useDispatch} from 'react-redux';
-import { AppDispatch } from '../../Redux/Store';
+import {useAppDispatch} from '../../Redux/Store';
+import {setCurrentUser} from '../../Redux/Reducers/userSlice';
 
 const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
   route,
   navigation,
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [form, setForm] = useState(false);
   const [password, setPassword] = useState('');
@@ -34,10 +34,7 @@ const Login: ({route, navigation}: LoginProps) => React.JSX.Element = ({
           if (parsedData[email].password == password) {
             const data = JSON.stringify(parsedData[email]);
             await AsyncStorage.setItem(STORAGE.CURRENTUSER, data);
-            dispatch({
-              type: 'users/setCurrentUser',
-              payload: parsedData[email],
-            });
+            dispatch(setCurrentUser(parsedData[email]));
           } else {
             Alert.alert(
               'Wrong Password',

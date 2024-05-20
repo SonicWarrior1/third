@@ -8,36 +8,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {STORAGE} from '../constants/strings';
 import ChangePass from '../screens/changePass';
 import Billing from '../screens/billing';
-import {useDispatch, useSelector} from 'react-redux';
 import User from '../interfaces/user_interface';
-import {AppDispatch, RootState} from '../Redux/Store';
-import {
-  UsersSetAllUser,
-  UsersSetCurrentUser,
-} from '../Redux/Actions/userActions';
+import { useAppDispatch, useAppSelector} from '../Redux/Store';
+import { setAllUser, setCurrentUser } from '../Redux/Reducers/userSlice';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AuthNavigator = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   async function getUser() {
     const json = await AsyncStorage.getItem(STORAGE.CURRENTUSER);
     const all_users = await AsyncStorage.getItem(STORAGE.ALLUSERDATA);
     if (json && all_users) {
       const jsonVal: User = JSON.parse(json);
       const all_parsed: User[] = JSON.parse(all_users);
-      jsonVal.dob = new Date(jsonVal.dob);
-      dispatch(UsersSetCurrentUser(jsonVal));
-      dispatch(UsersSetAllUser(all_parsed));
+      dispatch(setCurrentUser(jsonVal));
+      dispatch(setAllUser(all_parsed));
     } else {
-      dispatch(UsersSetCurrentUser(undefined));
+      dispatch(setCurrentUser(undefined));
     }
   }
   useEffect(() => {
     getUser();
   }, []);
-  const user = useSelector(
-    (state: RootState) => state.UserReducer?.currentUser,
+
+  const user = useAppSelector(
+    (state) => state.user.currentUser,
   );
   return (
     <Stack.Navigator>

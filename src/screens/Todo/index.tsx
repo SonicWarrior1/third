@@ -7,37 +7,34 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../Redux/Store';
+import {useAppDispatch, useAppSelector} from '../../Redux/Store';
 import CustomInput from '../../components/input/custom_input';
 import CustomButton from '../../components/input/custom_button';
 import CheckBox from '@react-native-community/checkbox';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Swipeable} from 'react-native-gesture-handler';
-import {todoType, filterType} from '../../Redux/Reducers/todoSlice';
 import ActionSheet, {ActionSheetRef} from 'react-native-actions-sheet';
+
 import {
-  TodoAddColorFilter,
-  TodoAllCompleted,
-  TodoClearCompleted,
-  TodoDelete,
-  TodoRemoveColorFilter,
-  todosAdded,
-  TodosChangeTodoStatus,
-  todoToggled,
-} from '../../Redux/Actions/todoActions';
+  todoAddColor,
+  todoAddColorFilter,
+  todoAdded,
+  todoAllComplete,
+  todoChangeTodoStatus,
+  todoClearComplete,
+  todoDelete,
+  todoRemoveColorFilter,
+  todoToggle,
+} from '../../Redux/Reducers/todoSlice';
+import style from './style';
 
 function Todo() {
-  const dataList = useSelector<RootState, todoType[]>(
-    state => state.TodoReducer?.todos!,
-  );
-  const filters = useSelector<RootState, filterType>(
-    state => state.TodoReducer?.filters!,
-  );
+  const dataList = useAppSelector(state => state.todo.todos);
+  const filters = useAppSelector(state => state.todo.filters);
   console.log(dataList);
   console.log(filters);
   const [text, setText] = useState('');
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const colors = ['red', 'blue', 'green', 'orange', 'purple'];
   function colorFilter(item: {
     id: number;
@@ -66,9 +63,9 @@ function Todo() {
   }
   const actionSheetRef = useRef<ActionSheetRef>(null);
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={style.safeView}>
       <ActionSheet ref={actionSheetRef}>
-        <View style={{paddingHorizontal: 10, paddingVertical: 20}}>
+        <View style={style.actionSheetView}>
           <Text>
             Remaining Todos{' '}
             {dataList.reduce((acc, curr) => {
@@ -78,30 +75,24 @@ function Todo() {
               return acc;
             }, 0)}
           </Text>
-          <View style={{flexDirection: 'row'}}>
-            <View style={{flexDirection: 'column', flex: 1}}>
+          <View style={style.actionOutCtr}>
+            <View style={style.actionInCtr}>
               <CustomButton
                 title="Mark All Completed"
                 onPress={() => {
-                  dispatch(TodoAllCompleted());
+                  dispatch(todoAllComplete());
                 }}
               />
               <CustomButton
                 title="Clear Completed"
                 onPress={() => {
-                  dispatch(TodoClearCompleted());
+                  dispatch(todoClearComplete());
                 }}
               />
             </View>
-            <View style={{flexDirection: 'column', flex: 1}}>
+            <View style={style.actionInCtr}>
               <Dropdown
-                style={{
-                  width: 120,
-                  borderWidth: 1,
-                  paddingHorizontal: 5,
-                  marginLeft: 10,
-                  marginBottom: 5,
-                }}
+                style={style.dropdown}
                 data={[
                   {label: 'All', value: 'All'},
                   {label: 'Active', value: 'Active'},
@@ -112,7 +103,7 @@ function Todo() {
                 onChange={val => {
                   console.log(val.value);
                   dispatch(
-                    TodosChangeTodoStatus(
+                    todoChangeTodoStatus(
                       val.value as 'All' | 'Active' | 'Completed',
                     ),
                   );
@@ -120,31 +111,20 @@ function Todo() {
                 valueField={'value'}
               />
               {colors.map(color => (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: 5,
-                  }}
-                  key={color}>
+                <View style={style.colorCtr} key={color}>
                   <CheckBox
                     style={{marginHorizontal: 20}}
                     value={filters.colors.includes(color)}
                     onValueChange={val => {
                       if (val) {
-                        dispatch(TodoAddColorFilter(color));
+                        dispatch(todoAddColorFilter(color));
                       } else {
-                        dispatch(TodoRemoveColorFilter(color));
+                        dispatch(todoRemoveColorFilter(color));
                       }
                     }}
                   />
                   <View
-                    style={{
-                      backgroundColor: color,
-                      width: 25,
-                      height: 15,
-                      marginRight: 20,
-                    }}></View>
+                    style={[style.colorBox, {backgroundColor: color}]}></View>
                   <Text>{color}</Text>
                 </View>
               ))}
@@ -152,13 +132,7 @@ function Todo() {
           </View>
         </View>
       </ActionSheet>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          columnGap: 10,
-          paddingHorizontal: 15,
-        }}>
+      <View style={style.inputRow}>
         <CustomInput
           placeholderText="What needs to be done"
           onChangeText={str => {
@@ -174,7 +148,7 @@ function Todo() {
           flex={1}
           onPress={() => {
             if (text) {
-              dispatch(todosAdded(text));
+              dispatch(todoAdded(text));
               setText('');
             }
           }}
@@ -189,7 +163,7 @@ function Todo() {
       />
       <FlatList
         data={dataList.filter(item => statusFilter(item) && colorFilter(item))}
-        style={{flex: 1, paddingTop: 10}}
+        style={style.list}
         renderItem={({item}) => {
           return (
             <Swipeable
@@ -197,42 +171,32 @@ function Todo() {
                 return (
                   <View>
                     <TouchableOpacity
-                      style={{
-                        backgroundColor: 'red',
-                        height: '100%',
-                        justifyContent: 'center',
-                        paddingHorizontal: 15,
-                        borderRadius: 30,
-                      }}
+                      style={style.deleteBtn}
                       onPress={() => {
-                        dispatch(TodoDelete(item.id));
+                        dispatch(todoDelete(item.id));
                       }}>
                       <Text style={{color: 'white'}}>Delete</Text>
                     </TouchableOpacity>
                   </View>
                 );
               }}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingHorizontal: 15,
-                  backgroundColor: 'white',
-                  borderRadius: 30,
-                  paddingVertical: 8,
-                  marginHorizontal: 10,
-                }}>
+              <View style={style.listItem}>
                 <CheckBox
                   value={item.completed}
                   onChange={() => {
-                    dispatch(todoToggled(item.id));
+                    dispatch(todoToggle(item.id));
                   }}
                 />
-                <Text style={{fontSize: 18, width: 120}}>{item.text}</Text>
+                <Text style={style.listItemText}>{item.text}</Text>
                 <Dropdown
-                  style={{width: 120, borderWidth: 1, paddingHorizontal: 5}}
+                  style={{width: 120, paddingHorizontal: 5}}
+                  renderLeftIcon={() => (
+                    <View
+                      style={[
+                        style.dropdown2,
+                        {backgroundColor: item.color},
+                      ]}></View>
+                  )}
                   data={[
                     {label: 'Red', value: 'red'},
                     {label: 'Blue', value: 'blue'},
@@ -242,10 +206,7 @@ function Todo() {
                   ]}
                   labelField={'label'}
                   onChange={val => {
-                    dispatch({
-                      type: 'todos/TodoAddColor',
-                      payload: {id: item.id, color: val.value},
-                    });
+                    dispatch(todoAddColor({id: item.id, color: val.value}));
                   }}
                   value={item.color}
                   valueField={'value'}
@@ -254,16 +215,17 @@ function Todo() {
             </Swipeable>
           );
         }}
-        ItemSeparatorComponent={() => {
-          return (
-            <View
-              style={{
-                marginVertical: 5,
-              }}></View>
-          );
-        }}
+        ItemSeparatorComponent={Itemseperator}
       />
     </SafeAreaView>
+  );
+}
+function Itemseperator(): React.JSX.Element {
+  return (
+    <View
+      style={{
+        marginVertical: 5,
+      }}></View>
   );
 }
 

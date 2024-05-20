@@ -4,15 +4,17 @@ import {View} from 'react-native';
 
 import {STORAGE} from '../../constants/strings';
 import CustomButton from '../../components/input/custom_button';
-import {useDispatch} from 'react-redux';
-import {AppDispatch} from '../../Redux/Store';
-import {UsersDeleteCurrentUser} from '../../Redux/Actions/userActions';
+import {useAppDispatch} from '../../Redux/Store';
+import {
+  SettingScreenProps,
+} from '../../constants/navigation';
+import {deleteCurrentUser} from '../../Redux/Reducers/userSlice';
 
-const SettingScreen: ({route, navigation}) => React.JSX.Element = ({
+const SettingScreen: ({
   route,
   navigation,
-}) => {
-  const dispatch = useDispatch<AppDispatch>();
+}: SettingScreenProps) => React.JSX.Element = ({route, navigation}) => {
+  const dispatch = useAppDispatch();
   return (
     // <DrawerView navigation={navigation}>
     <View style={{flex: 1, justifyContent: 'center', paddingHorizontal: 20}}>
@@ -32,8 +34,7 @@ const SettingScreen: ({route, navigation}) => React.JSX.Element = ({
         title="Signout"
         onPress={async () => {
           await AsyncStorage.removeItem(STORAGE.CURRENTUSER);
-          dispatch(UsersDeleteCurrentUser());
-      
+          dispatch(deleteCurrentUser());
         }}
         btnColor="#FC4100"
       />

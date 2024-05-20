@@ -55,7 +55,7 @@ const ChangePass: ({
               {
                 text: 'Ok',
                 onPress: () => {
-                  navigation.navigate('Home');
+                  navigation.navigate('App');
                 },
               },
             ]);

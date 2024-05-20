@@ -140,7 +140,7 @@ class Signup extends React.Component<
         lastName: this.state.lastName,
         email: this.state.email,
         phone: this.state.phone,
-        dob: this.state.dob,
+        dob: this.state.dob.toLocaleDateString(),
         password: this.state.password,
         image: this.state.image,
       };

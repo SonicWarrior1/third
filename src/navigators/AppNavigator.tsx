@@ -1,4 +1,6 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 import {
   BottomTabParamList,
   DrawerParamList,
@@ -16,11 +18,11 @@ import {
 import SettingScreen from '../screens/settings';
 import {ICONS} from '../constants/icons';
 import Todo from '../screens/Todo';
-import {useSelector} from 'react-redux';
-import {RootState} from '../Redux/Store';
-import {todoType} from '../Redux/Reducers/todoSlice';
-import User from '../interfaces/user_interface';
 import Products from '../screens/Products';
+import {useAppSelector} from '../Redux/Store';
+import PokeDex from '../screens/pokedex';
+import CustomTabBar from '../components/CustomBottomTab';
+
 function CustomDrawerContent(props: Readonly<DrawerContentComponentProps>) {
   return (
     <DrawerContentScrollView {...props}>
@@ -55,16 +57,13 @@ const DrawerNavigator = () => {
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 const AppNavigator = () => {
-  const todos = useSelector<RootState, todoType[]>(
-    state => state.TodoReducer?.todos!,
-  );
-  const allUser = useSelector<RootState, {[key: string]: User}>(
-    state => state.UserReducer?.allUser!,
-  );
+  const todos = useAppSelector(state => state.todo.todos);
+  const allUser = useAppSelector(state => state.user.allUser);
 
   return (
     <Tab.Navigator
       screenOptions={{headerShown: false, tabBarActiveTintColor: 'orange'}}
+      tabBar={CustomTabBar}
       backBehavior="firstRoute">
       <Tab.Screen
         name="Drawer"
@@ -88,6 +87,18 @@ const AppNavigator = () => {
         }}
       />
       <Tab.Screen
+        name="PokeDex"
+        component={PokeDex}
+        options={{
+          tabBarIcon: ({focused, color, size}) =>
+            ICONS.Pokemon({
+              width: size,
+              height: size,
+              color: color,
+            }),
+        }}
+      />
+      <Tab.Screen
         name="Todo"
         component={Todo}
         options={{
@@ -97,7 +108,8 @@ const AppNavigator = () => {
               height: size,
               color: color,
             }),
-          tabBarBadge: todos.length,
+          tabBarBadgeStyle: {backgroundColor: 'green'},
+          tabBarBadge: todos.length === 0 ? undefined : todos.length,
         }}
       />
       <Tab.Screen

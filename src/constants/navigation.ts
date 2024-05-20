@@ -1,4 +1,4 @@
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { BottomTabScreenProps, } from "@react-navigation/bottom-tabs";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -16,20 +16,21 @@ export type BottomTabParamList = {
     Drawer: undefined;
     Users: undefined;
     Todo: undefined;
-    Products: undefined
+    Products: undefined;
+    PokeDex:undefined
 };
 export type DrawerParamList = {
     Home: undefined
     Settings: undefined
 }
-export type HomeScreenProps = CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, 'Drawer'>,
-    DrawerScreenProps<DrawerParamList, 'Home'>>
 
 export type UserTabScreenProps = CompositeScreenProps<
     BottomTabScreenProps<BottomTabParamList, 'Users'>,
     NativeStackScreenProps<RootStackParamList>
 >;
-
+export type SettingScreenProps = CompositeScreenProps<
+    DrawerScreenProps<DrawerParamList, 'Settings'>,
+    NativeStackScreenProps<RootStackParamList>
+>
 export type LoginProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 export type SignupProps = NativeStackScreenProps<RootStackParamList, 'Signup'>;

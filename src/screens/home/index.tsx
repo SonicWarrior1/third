@@ -1,20 +1,10 @@
 import {Image, Text, View} from 'react-native';
 import style from './styles';
-import User from '../../interfaces/user_interface';
-import {HomeScreenProps} from '../../constants/navigation';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../Redux/Store';
+import {useAppSelector} from '../../Redux/Store';
 
-const Home: ({route, navigation}: HomeScreenProps) => React.JSX.Element = ({
-  route,
-  navigation,
-}) => {
-  const user: User = useSelector<RootState, User>(
-    state => state.UserReducer?.currentUser!,
-  );
-  if (user) {
-    user.dob = new Date(user.dob);
-  }
+const Home: () => React.JSX.Element = () => {
+  const user = useAppSelector(state => state.user.currentUser); 
+  
   return (
     <View style={style.main}>
       <Image source={{uri: user?.image}} style={style.image} />
@@ -23,7 +13,7 @@ const Home: ({route, navigation}: HomeScreenProps) => React.JSX.Element = ({
         <Text style={style.text}>Last Name: {user?.lastName}</Text>
         <Text style={style.text}>Email: {user?.email}</Text>
         <Text style={style.text}>
-          Date of Birth: {user?.dob.toLocaleDateString()}
+          Date of Birth: {new Date(user?.dob!).toLocaleDateString()}
         </Text>
         <Text style={style.text}>Phone: {user?.phone}</Text>
         <Text style={style.text}>Password: {user?.password}</Text>
