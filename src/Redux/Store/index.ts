@@ -3,12 +3,6 @@ import { combineReducers } from "redux";
 import {
     persistReducer,
     persistStore,
-    FLUSH,
-    REHYDRATE,
-    PAUSE,
-    PERSIST,
-    PURGE,
-    REGISTER,
 } from "redux-persist";
 import UserReducer from "../Reducers/userSlice";
 import TodoReducer from "../Reducers/todoSlice";
@@ -36,9 +30,7 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             immutableCheck: false,
-            serializableCheck: {
-                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-            },
+            serializableCheck: false,
         }).concat(sagaMiddleware).concat(pokemonApi.middleware),
 })
 sagaMiddleware.run(rootSaga)

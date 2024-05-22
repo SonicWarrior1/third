@@ -1,16 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {useGetPokemonQuery} from '../../Redux/api/apislice';
-import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator, SafeAreaView, View} from 'react-native';
 import style from './styles';
 import {FlatList} from 'react-native-gesture-handler';
 import PokeModal from './components/pokeModal';
+import PokeCard from './components/pokeCard';
 
 function PokeDex() {
   const [offset, setOffset] = useState(0);
@@ -29,6 +23,7 @@ function PokeDex() {
       url: string;
     }>
   >([]);
+
   useEffect(() => {
     if (data) {
       setFinalData(finalData => {
@@ -48,24 +43,17 @@ function PokeDex() {
           }}
           data={finalData}
           numColumns={3}
-          renderItem={({item}) => {
+          renderItem={({item, index}) => {
             const id = item.url.split('/')[6];
             return (
-              <Pressable
-                style={style.card}
-                onPress={() => {
-                  setPokemon(+id);
-                  setModal(true);
-                }}>
-                <Image
-                  source={{
-                    uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`,
-                  }}
-                  height={150}
-                  width={150}
-                />
-                <Text>{item.name}</Text>
-              </Pressable>
+              <PokeCard
+                item={item}
+                id={id}
+                setModal={setModal}
+                setPokemon={setPokemon}
+                index={index}
+                key={id}
+              />
             );
           }}
         />

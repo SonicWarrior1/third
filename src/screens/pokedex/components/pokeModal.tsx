@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -59,23 +59,27 @@ function PokeModal({
   const [getSpecies] = useLazyGetEvolutionIdQuery();
   const [getEvo] = useLazyGetEvolutionsQuery();
   const [evoChain, setEvoChain] = useState<Species[]>([]);
-  const fn = async (data: {
-    abilities: string[];
-    id: string;
-    name: string;
-    weight: string;
-    height: string;
-    base_experience: string;
-    type: string;
-    species: string;
-  }) => {
-    setLoading(true);
-    const res = await getSpecies(data.species);
-    const res2 = await getEvo(res.data!);
-    const x = extractSpecies(res2.data);
-    setEvoChain(x);
-    setLoading(false);
-  };
+  const fn = useMemo(
+    () =>
+      async (data: {
+        abilities: string[];
+        id: string;
+        name: string;
+        weight: string;
+        height: string;
+        base_experience: string;
+        type: string;
+        species: string;
+      }) => {
+        setLoading(true);
+        const res = await getSpecies(data.species);
+        const res2 = await getEvo(res.data!);
+        const x = extractSpecies(res2.data);
+        setEvoChain(x);
+        setLoading(false);
+      },
+    [id],
+  );
   useEffect(() => {
     fn(data!);
   }, [data]);
@@ -90,11 +94,8 @@ function PokeModal({
         {loading ? (
           <ActivityIndicator color="orange" size={100} />
         ) : (
-          <Pressable
-            style={style.modal}
-            onPress={() => {}}>
-            <View
-              style={style.mainView}>
+          <Pressable style={style.modal} onPress={() => {}}>
+            <View style={style.mainView}>
               <Image
                 source={{
                   uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
@@ -104,8 +105,7 @@ function PokeModal({
                 height={200}
                 width={200}
               />
-              <View
-                style={style.nameRow}>
+              <View style={style.nameRow}>
                 <Text style={{fontSize: 20, fontWeight: 'bold'}}>
                   {data?.name[0].toUpperCase() + data?.name.slice(1)!}
                 </Text>
@@ -245,9 +245,7 @@ function PokeModal({
 
               <View style={style.abilityCtr}>
                 {data?.abilities.map((ability: string) => (
-                  <View
-                    key={ability}
-                    style={style.ability}>
+                  <View key={ability} style={style.ability}>
                     <Text
                       style={{
                         padding: 10,
@@ -271,7 +269,6 @@ function PokeModal({
                   />
                 ))}
               </View>
-            
             </View>
           </Pressable>
         )}
@@ -280,6 +277,4 @@ function PokeModal({
   );
 }
 
-export default PokeModal;
-
-
+export default React.memo(PokeModal);

@@ -9,6 +9,7 @@ import Todo from '../assets/Svgs/todo.svg'
 import Shopping from '../assets/Svgs/shopping.svg'
 import Bookmark from '../assets/Svgs/bookmark.svg'
 import Pokemon from '../assets/Svgs/pokemon.svg'
+import Pokeball from '../assets/Svgs/pokeball.svg'
 const iconStyle = (
   { width = 0,
     height = 0,
@@ -32,4 +33,5 @@ export const ICONS = {
   Shopping: (params: iconProps) => Shopping({ ...iconStyle({ ...params }) }),
   Bookmark: (params: iconProps) => Bookmark({ ...iconStyle({ ...params }) }),
   Pokemon: (params: iconProps) => Pokemon({ ...iconStyle({ ...params }) }),
+  Pokeball: (params: iconProps) => Pokeball({ ...iconStyle({ ...params }) }),
 };

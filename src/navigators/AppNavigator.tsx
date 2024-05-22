@@ -1,4 +1,5 @@
 import {
+  BottomTabBarProps,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import {
@@ -54,7 +55,9 @@ const DrawerNavigator = () => {
     </Drawer.Navigator>
   );
 };
-
+function CustomTab(props: Readonly<BottomTabBarProps>) {
+  return <CustomTabBar {...props} />;
+}
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 const AppNavigator = () => {
   const todos = useAppSelector(state => state.todo.todos);
@@ -63,7 +66,7 @@ const AppNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{headerShown: false, tabBarActiveTintColor: 'orange'}}
-      tabBar={CustomTabBar}
+      tabBar={CustomTab}
       backBehavior="firstRoute">
       <Tab.Screen
         name="Drawer"
@@ -78,6 +81,7 @@ const AppNavigator = () => {
         name="Products"
         component={Products}
         options={{
+          title: 'Products',
           tabBarIcon: ({focused, color, size}) =>
             ICONS.Shopping({
               width: size,
@@ -90,6 +94,7 @@ const AppNavigator = () => {
         name="PokeDex"
         component={PokeDex}
         options={{
+          title: 'PokeDex',
           tabBarIcon: ({focused, color, size}) =>
             ICONS.Pokemon({
               width: size,
@@ -102,6 +107,7 @@ const AppNavigator = () => {
         name="Todo"
         component={Todo}
         options={{
+          title: 'Todo',
           tabBarIcon: ({focused, color, size}) =>
             ICONS.Todo({
               width: size,
@@ -116,6 +122,7 @@ const AppNavigator = () => {
         name={NAVIGATION.TABS.USERS}
         component={AllUsers}
         options={{
+          title: 'Users',
           tabBarIcon: ({focused, color, size}) =>
             ICONS.USERS({
               width: size,

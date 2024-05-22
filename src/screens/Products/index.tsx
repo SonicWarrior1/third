@@ -15,6 +15,11 @@ import {Action, PayloadAction} from '@reduxjs/toolkit';
 import style from './styles';
 import Carousel from 'react-native-reanimated-carousel';
 import CustomButton from '../../components/input/custom_button';
+import {Gesture, GestureDetector} from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  withDecay,
+} from 'react-native-reanimated';
 
 function debounceDispatch(fn: Dispatch<Action>, delay = 300) {
   let timer: any = null;
@@ -26,6 +31,26 @@ function debounceDispatch(fn: Dispatch<Action>, delay = 300) {
   };
 }
 function Products() {
+  const bottom = useSharedValue(15);
+  const right = useSharedValue(10);
+
+  const pan = Gesture.Pan()
+    .onChange(event => {
+      bottom.value -= event.changeY;
+      right.value -= event.changeX;
+    })
+    .onFinalize(event => {
+      right.value = withDecay({
+        velocity: event.velocityX,
+        rubberBandEffect: true,
+        clamp: [10, 500],
+      });
+      bottom.value = withDecay({
+        velocity: event.velocityY,
+        rubberBandEffect: true,
+        clamp: [15, 700],
+      });
+    });
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -33,7 +58,6 @@ function Products() {
   }, []);
 
   const debouncedDispatch = useCallback(debounceDispatch(dispatch, 1000), []);
-
   function onChangeText(str: string) {
     setSearch(str);
     debouncedDispatch({type: 'searchProduct', payload: str});
@@ -51,7 +75,7 @@ function Products() {
     category: '',
   });
   return (
-    <SafeAreaView style={[style.main, {marginBottom: 29}]}>
+    <SafeAreaView style={[style.main, {paddingBottom: 50}]}>
       {selectedProduct && (
         <Modal visible={modal} transparent={true} animationType="fade">
           <Pressable
@@ -270,27 +294,29 @@ function Products() {
           );
         }}
       />
-      <View
-        style={{
-          position: 'absolute',
-          right: 10,
-          bottom: 15,
-        }}>
-        <Pressable
+      <GestureDetector gesture={pan}>
+        <Animated.View
           style={{
-            backgroundColor: 'orange',
-            borderRadius: 50,
-            height: 60,
-            width: 60,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onPress={() => {
-            setNewModal(true);
+            position: 'absolute',
+            right: right,
+            bottom: bottom,
           }}>
-          <Text style={{fontSize: 28, alignSelf: 'center'}}>+</Text>
-        </Pressable>
-      </View>
+          <Pressable
+            style={{
+              backgroundColor: 'orange',
+              borderRadius: 50,
+              height: 60,
+              width: 60,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={() => {
+              setNewModal(true);
+            }}>
+            <Text style={{fontSize: 28, alignSelf: 'center'}}>+</Text>
+          </Pressable>
+        </Animated.View>
+      </GestureDetector>
     </SafeAreaView>
   );
 }
